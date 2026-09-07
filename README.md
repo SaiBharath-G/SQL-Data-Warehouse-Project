@@ -20,7 +20,7 @@ Power BI | Ad-hoc SQL Queries | Machine Learning
 
 ## High-Level Architecture
 
-![High-Level Data Warehouse Architecture](docs/Data_architecture.png)
+![High-Level Data Warehouse Architecture](docs/data_architecture.png)
 
 ## Data Sources
 
