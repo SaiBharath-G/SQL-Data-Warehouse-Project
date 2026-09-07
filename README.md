@@ -1,44 +1,184 @@
-## 🚀 Project Requirements
+# SQL Data Warehouse Project
 
-### Building the Data Warehouse (Data Engineering)
+A SQL Server data warehouse project that transforms raw CRM and ERP CSV files into business-ready data for analytics and reporting.
 
-#### Objective
+## Project Overview
 
-Develop a modern SQL Data Warehouse using SQL Server to consolidate data from multiple source systems into a centralized repository for analytical reporting and business intelligence.
+This project implements a three-layer data warehouse architecture:
 
-#### Specifications
+```text
+CRM & ERP CSV Files
+        ↓
+Bronze Layer
+        ↓
+Silver Layer
+        ↓
+Gold Layer
+        ↓
+Power BI | Ad-hoc SQL Queries | Machine Learning
+```
 
-* **Data Sources:** Import data from CRM and ERP systems provided as CSV files.
-* **Data Architecture:** Implement the Medallion Architecture (Bronze, Silver, and Gold).
-* **Data Loading:** Perform full refresh loading using the Truncate and Insert approach.
-* **Data Processing:** Clean, standardize, and transform raw data into analytics-ready datasets.
-* **Data Modeling:** Build a Star Schema consisting of fact and dimension tables.
-* **Reporting Layer:** Create SQL views in the Gold layer optimized for analytical queries.
-* **Naming Standards:** Follow consistent snake_case naming conventions for database objects.
-* **Documentation:** Maintain clear documentation of the ETL process and data model.
+## High-Level Architecture
 
----
+![High-Level Data Warehouse Architecture](docs/Data_architecture.png)
 
-### 📊 BI: Analytics & Reporting (Data Analytics)
+## Data Sources
 
-#### Objective
+- **CRM:** Customer, product, and sales data
+- **ERP:** Customer, product, and reference data
+- **Interface:** CSV files stored in folders
+- **Processing:** Batch processing
 
-Develop an analytical data model that enables business users to generate meaningful insights and support data-driven decision-making.
+## Data Warehouse Layers
 
-#### Deliverables
+### Bronze Layer — Raw Data
 
-Develop SQL-based analytics to provide insights into:
+Stores source data as-is.
 
-* **Customer Behavior**
-* **Product Performance**
-* **Sales Trends**
-* **Revenue Analysis**
-* **KPI Monitoring**
-* **Business Performance Reporting**
-* **Decision Support**
+- **Load:** Batch processing
+- **Strategy:** Full load / full refresh
+- **Method:** Truncate and insert
+- **Transformations:** None
+- **Data model:** None (as-is)
+- **Implementation:** SQL Server tables and stored procedure
 
----
+### Silver Layer — Cleaned & Standardized Data
 
-## 📜 License
+Improves data quality and prepares data for business modeling.
 
-This project is licensed under the **MIT License**, allowing anyone to use, modify, and distribute the project while retaining the original copyright notice.
+- **Load:** Batch processing
+- **Strategy:** Full load / full refresh
+- **Method:** Truncate and insert
+- **Transformations:**
+  - Data cleaning
+  - Data standardization
+  - Data normalization
+  - Derived columns
+  - Data enrichment
+- **Data model:** None (as-is)
+- **Implementation:** SQL Server tables and stored procedure
+
+### Gold Layer — Business-Ready Data
+
+Integrates and transforms Silver data into analytical structures.
+
+- **Load:** No separate raw-data load
+- **Transformations:**
+  - Data integration
+  - Aggregations
+  - Business logic
+- **Data models:**
+  - Star schema
+  - Flat tables
+  - Aggregated tables
+- **Implementation:** SQL Server views and analytical tables
+
+## Loading Strategy
+
+The project uses **batch processing with a full-refresh approach**.
+
+```text
+Batch Processing
+        ↓
+Full Load
+        ↓
+TRUNCATE TABLE
+        ↓
+INSERT All Records
+```
+
+## Data Modeling
+
+The Gold layer uses dimensional modeling.
+
+### Dimension Tables
+
+Store descriptive business information.
+
+Examples:
+
+- `gold.dim_customers`
+- `gold.dim_products`
+
+### Fact Tables
+
+Store measurable business events.
+
+Example:
+
+- `gold.fact_sales`
+
+### Surrogate Keys
+
+Warehouse-generated keys used to identify dimension records.
+
+```text
+customer_key → Surrogate key
+customer_id  → Source business key
+```
+
+## Project Structure
+
+```text
+sql-data-warehouse-project/
+│
+├── datasets/
+│   ├── source_crm/
+│   └── source_erp/
+│
+├── docs/
+│   └── high_level_architecture.png
+│
+├── scripts/
+│   ├── bronze/
+│   ├── silver/
+│   └── gold/
+│
+├── tests/
+│
+└── README.md
+```
+
+## Data Quality Checks
+
+- Duplicate records
+- Null values
+- Invalid dates
+- Incorrect data types
+- Invalid relationships
+- Unmatched foreign keys
+- Invalid sales values
+- Inconsistent categorical values
+
+## Technologies Used
+
+- SQL Server
+- T-SQL
+- SQL Server Management Studio
+- Stored Procedures
+- Views
+- Dimensional Modeling
+- Power BI
+- GitHub
+
+## Consumers
+
+- **Power BI** — Dashboards and reporting
+- **Ad-hoc SQL Queries** — Exploratory analysis
+- **Machine Learning** — Analytical workflows
+
+## Key Learning Outcomes
+
+- Build a SQL Server data warehouse
+- Implement Bronze, Silver, and Gold layers
+- Load CSV files using batch processing
+- Apply full-refresh ETL
+- Clean and standardize data
+- Create fact and dimension tables
+- Generate surrogate keys
+- Perform data quality validation
+- Prepare data for Power BI
+
+## License
+
+This project is intended for learning, portfolio development, and interview preparation.
