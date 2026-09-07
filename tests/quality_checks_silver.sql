@@ -60,6 +60,42 @@ SELECT
 FROM silver.crm_prd_info
 WHERE prd_nm != TRIM(prd_nm);
 
+SELECT * FROM silver.crm_prd_info
+-- referential integrity check 
+where REPLACE(SUBSTRING(prd_key,1,5),'-','_')  NOT IN 
+(SELECT DISTINCT id FROM silver.erp_px_cat_g1v2)
+
+SELECT * FROM silver.crm_prd_info
+--checking whether relationship between keys before extraction
+WHERE SUBSTRING(prd_key,7,len(prd_key)) IN (
+SELECT sls_prd_key FROM silver.crm_sales_details )
+--Validate the relationship between the product master and sales data, and identify products that have no corresponding sales records.
+
+Select prd_id,count(*) FROM silver.crm_prd_info
+GROUP BY prd_id
+HAVING count(*)>1 or prd_id IS NULL
+
+--check for unwanted spaces
+-- expectations: No results
+SELECT prd_nm
+FROM silver.crm_prd_info
+WHERE trim(prd_nm)<>prd_nm
+
+-- Check for Nulls or negative numbers
+--Expectation : No results
+SELECT prd_cost
+FROM silver.crm_prd_info
+WHERE prd_cost <0 or prd_cost IS NULL
+
+--DATA Standarization &consistency       for cardinality check (case when)
+
+SELECT DISTINCT prd_line
+from silver.crm_prd_info
+
+-- CHeck  for invalid date orders
+select *from
+silver.crm_prd_info
+WHERE prd_end_dt < prd_start_dt
 -- Check for NULLs or Negative Values in Cost
 -- Expectation: No Results
 SELECT 
@@ -100,7 +136,9 @@ FROM silver.crm_sales_details
 WHERE sls_order_dt > sls_ship_dt 
    OR sls_order_dt > sls_due_dt;
 
--- Check Data Consistency: Sales = Quantity * Price
+-- Check Data Consistency : Between Sales, Quantity, Price
+-- >> Sales = Quantity * Price
+-- >> Values must not be NULL , zero , or negative.
 -- Expectation: No Results
 SELECT DISTINCT 
     sls_sales,
